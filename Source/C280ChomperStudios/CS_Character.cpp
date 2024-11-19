@@ -10,7 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
+#include "CS_CharacterStats.h" 
 #include "Engine/DataTable.h"
 
 #include "Kismet/KismetSystemLibrary.h"
@@ -71,7 +71,7 @@ void ACS_Character::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
+	UpdateCharacterStats(1);
 }
 
 // Called every frame
@@ -133,18 +133,39 @@ void ACS_Character::Look(const FInputActionValue& Value)
 // Handle the change of speed when the sprint button is pressed
 void ACS_Character::SprintStart(const FInputActionValue& Value)
 {
-	GetCharacterMovement()->MaxWalkSpeed = 3000.f;
+	if (GetCharacterStats())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->SprintSpeed;
+	}
 }
 
 // Handle the change of speed when the sprint button is released
 void ACS_Character::SprintEnd(const FInputActionValue& Value)
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	if (GetCharacterStats())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->SprintSpeed;
+	}
 }
 
 void ACS_Character::Interact(const FInputActionValue& Value)
 {
 	GEngine->AddOnScreenDebugMessage(30, 5.f, FColor::Red, TEXT("Interact"));
 	
+}
+
+void ACS_Character::UpdateCharacterStats(int32 CharacterLevel)
+{
+		if (CharacterDataTable)
+		{
+		TArray<FCS_CharacterStats*> CharacterStatsRows;
+		CharacterDataTable->GetAllRows<FCS_CharacterStats>(TEXT("CS_Character"), CharacterStatsRows);
+		if (CharacterStatsRows.Num() > 0)
+		{
+		const auto NewCharacterLevel = FMath::Clamp(CharacterLevel, 1, CharacterStatsRows.Num());
+		CharacterStats = CharacterStatsRows[NewCharacterLevel - 1];
+		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->WalkSpeed;
+		}
+	}
 }
 

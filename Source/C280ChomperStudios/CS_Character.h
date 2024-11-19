@@ -40,6 +40,12 @@ class C280CHOMPERSTUDIOS_API ACS_Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Data", meta = (AllowPrivateAccess = "true"))
+	class UDataTable* CharacterDataTable;
+
+	/** The character stats, retrieved from the data table. */
+	struct FCS_CharacterStats* CharacterStats;
+
 public:
 	// Sets default values for this character's properties
 	ACS_Character();
@@ -70,11 +76,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/** Updates the character stats based on the level. */
+	void UpdateCharacterStats(int32 CharacterLevel);
+
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns the CameraComponent used as a main camera for the character. */
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	// Getter for the character statistics based on the level
+	FORCEINLINE FCS_CharacterStats* GetCharacterStats() const { return CharacterStats; }
 
 };

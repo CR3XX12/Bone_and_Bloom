@@ -18,8 +18,8 @@ class C280CHOMPERSTUDIOS_API ACS_BasePickup : public AActor
 	/** The static mesh used to represent the pickup. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> Mesh;
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ACS_BasePickup();
 
@@ -35,10 +35,7 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Pickup", meta = (DisplayName = "Pickup"))
 	void Pickup(class ACS_Character* OwningCharacter);
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+public:
 
 	/** Returns the BoxCollision used as a trigger for the character. */
 	FORCEINLINE USphereComponent* GetSphereCollision() const { return SphereCollision; }

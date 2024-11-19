@@ -8,8 +8,6 @@
 // Sets default values
 ACS_BasePickup::ACS_BasePickup()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>("Collision");
 	RootComponent = SphereCollision;
@@ -28,8 +26,8 @@ ACS_BasePickup::ACS_BasePickup()
 void ACS_BasePickup::BeginPlay()
 {
 	Super::BeginPlay();
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &ACS_BasePickup::OnBeginOverlap);
-		
+
+	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &ACS_BasePickup::OnBeginOverlap);	
 }
 
 // Handles the Character overlapping the pickup.
@@ -48,10 +46,4 @@ void ACS_BasePickup::Pickup_Implementation(ACS_Character* OwningCharacter)
 	SetOwner(OwningCharacter);
 }
 
-// Called every frame
-void ACS_BasePickup::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
