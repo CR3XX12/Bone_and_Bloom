@@ -46,6 +46,9 @@ class C280CHOMPERSTUDIOS_API ACS_Character : public ACharacter
 	/** The character stats, retrieved from the data table. */
 	struct FCS_CharacterStats* CharacterStats;
 
+	UPROPERTY()
+	AActor* InteractableActor;
+
 public:
 	// Sets default values for this character's properties
 	ACS_Character();
@@ -68,9 +71,21 @@ protected:
 	/** The function called when the character stops sprinting. */
 	void SprintEnd(const FInputActionValue& Value);
 
+	/** The function called on the server when the character starts sprinting. */
+	UFUNCTION(Server, Reliable)
+	void SprintStart_Server();
+
+	/** The function called on the server when the character stops sprinting. */
+	UFUNCTION(Server, Reliable)
+	void SprintEnd_Server();
+
 
 	/** The function called when the character interacts with the environment. */
 	void Interact(const FInputActionValue& Value);
+
+	/** The function called on the server when the character interacts with the environment. */
+	UFUNCTION(Server, Reliable)
+	void Interact_Server();
 
 public:	
 	// Called every frame

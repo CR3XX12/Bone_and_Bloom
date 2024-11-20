@@ -12,7 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "CS_CharacterStats.h" 
 #include "Engine/DataTable.h"
-
+#include "CS_Interactable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 
@@ -79,6 +79,40 @@ void ACS_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GetLocalRole() != ROLE_Authority) return;
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = true;
+	QueryParams.AddIgnoredActor(this);
+
+	auto SphereRadius = 50.f;
+	auto StartLocation = GetActorLocation() + GetActorForwardVector() * 150.f;
+	auto EndLocation = StartLocation + GetActorForwardVector() * 500.f;
+
+	auto IsHit = UKismetSystemLibrary::SphereTraceSingle(
+		GetWorld(),
+		StartLocation,
+		EndLocation,
+		SphereRadius,
+		UEngineTypes::ConvertToTraceType(ECC_WorldStatic),
+		false,
+		TArray<AActor*>(),
+		EDrawDebugTrace::ForOneFrame,
+		HitResult,
+		true
+	);
+	// Check if the hit result implements the US_Interactable interface
+	if (IsHit && HitResult.GetActor()->GetClass()->ImplementsInterface(UCS_Interactable::StaticClass()))
+	{
+		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, SphereRadius, 12, FColor::Magenta, false, 1.f);
+		InteractableActor = HitResult.GetActor();
+	}
+	else
+	{
+		InteractableActor = nullptr;
+	}
+
 }
 
 // Called to bind functionality to input
@@ -133,14 +167,26 @@ void ACS_Character::Look(const FInputActionValue& Value)
 // Handle the change of speed when the sprint button is pressed
 void ACS_Character::SprintStart(const FInputActionValue& Value)
 {
+	SprintStart_Server();
+}
+
+// Handle the change of speed when the sprint button is released
+void ACS_Character::SprintEnd(const FInputActionValue& Value)
+{
+	SprintEnd_Server();
+}
+
+// Executes the sprint start action from the server
+void ACS_Character::SprintStart_Server_Implementation()
+{
 	if (GetCharacterStats())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->SprintSpeed;
 	}
 }
 
-// Handle the change of speed when the sprint button is released
-void ACS_Character::SprintEnd(const FInputActionValue& Value)
+// Executes the sprint end action from the server
+void ACS_Character::SprintEnd_Server_Implementation()
 {
 	if (GetCharacterStats())
 	{
@@ -150,21 +196,40 @@ void ACS_Character::SprintEnd(const FInputActionValue& Value)
 
 void ACS_Character::Interact(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(30, 5.f, FColor::Red, TEXT("Interact"));
+	//GEngine->AddOnScreenDebugMessage(30, 5.f, FColor::Red, TEXT("Interact"));
+	Interact_Server();
 	
+}
+
+void ACS_Character::Interact_Server_Implementation()
+{
+	if (InteractableActor)
+	{
+		ICS_Interactable::Execute_Interact(InteractableActor, this);
+	}
 }
 
 void ACS_Character::UpdateCharacterStats(int32 CharacterLevel)
 {
+		auto IsSprinting = false;
+		if (GetCharacterStats())
+		{
+			IsSprinting = GetCharacterMovement()->MaxWalkSpeed == GetCharacterStats()->SprintSpeed;
+		}
 		if (CharacterDataTable)
 		{
 		TArray<FCS_CharacterStats*> CharacterStatsRows;
 		CharacterDataTable->GetAllRows<FCS_CharacterStats>(TEXT("CS_Character"), CharacterStatsRows);
+		
 		if (CharacterStatsRows.Num() > 0)
 		{
 		const auto NewCharacterLevel = FMath::Clamp(CharacterLevel, 1, CharacterStatsRows.Num());
 		CharacterStats = CharacterStatsRows[NewCharacterLevel - 1];
 		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->WalkSpeed;
+			if (IsSprinting)
+			{
+				SprintStart_Server();
+			}
 		}
 	}
 }
