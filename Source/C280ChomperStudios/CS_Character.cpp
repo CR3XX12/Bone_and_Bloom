@@ -144,7 +144,7 @@ void ACS_Character::SprintEnd(const FInputActionValue& Value)
 {
 	if (GetCharacterStats())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->SprintSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->WalkSpeed;
 	}
 }
 
