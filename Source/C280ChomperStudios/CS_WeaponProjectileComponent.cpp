@@ -43,6 +43,9 @@ void UCS_WeaponProjectileComponent::Throw()
 {
 	Throw_Server();
 }
+void UCS_WeaponProjectileComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+}
 void UCS_WeaponProjectileComponent::Throw_Server_Implementation()
 {
 	// Spawn the projectile, setting its owner and instigator as the spawning character
@@ -61,6 +64,7 @@ void UCS_WeaponProjectileComponent::Throw_Server_Implementation()
 
 void UCS_WeaponProjectileComponent::SetProjectileClass(TSubclassOf<ACS_BaseWeaponProjectile> NewProjectileClass)
 {
+	
 	ProjectileClass = NewProjectileClass;
 }
 
