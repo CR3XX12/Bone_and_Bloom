@@ -10,7 +10,9 @@
 // Sets default values for this component's properties
 UCS_WeaponProjectileComponent::UCS_WeaponProjectileComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
 	ProjectileClass = ACS_BaseWeaponProjectile::StaticClass();
+
 	
 }
 
@@ -45,6 +47,9 @@ void UCS_WeaponProjectileComponent::Throw()
 }
 void UCS_WeaponProjectileComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
 }
 void UCS_WeaponProjectileComponent::Throw_Server_Implementation()
 {
