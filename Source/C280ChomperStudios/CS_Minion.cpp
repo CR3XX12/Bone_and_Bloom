@@ -10,8 +10,8 @@
 #include "Perception/PawnSensingComponent.h" 
 #include "Blueprint/AIBlueprintHelperLibrary.h" 
 #include "Components/SphereComponent.h"
-//#include "US_GameMode.h"
-//#include "US_BasePickup.h"
+#include "CS_GameMode.h"
+#include "CS_BasePickup.h"
 
 // Sets default values
 ACS_Minion::ACS_Minion()
@@ -48,6 +48,13 @@ ACS_Minion::ACS_Minion()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
+	// Set the pickup to spawn when the character is defeated
+	static ConstructorHelpers::FClassFinder<ACS_BasePickup> SpawnedPickupAsset(TEXT("/Game/Blueprints/BP_GoldCoinPickup"));
+	if (SpawnedPickupAsset.Succeeded())
+	{
+		SpawnedPickup = SpawnedPickupAsset.Class;
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -61,11 +68,11 @@ void ACS_Minion::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	if (GetLocalRole() != ROLE_Authority) return;
-	//OnTakeAnyDamage.AddDynamic(this, &ACS_Minion::OnDamage);
+	OnTakeAnyDamage.AddDynamic(this, &ACS_Minion::OnDamage);
 	OnActorBeginOverlap.AddDynamic(this, &ACS_Minion::OnBeginOverlap);
 	GetPawnSense()->OnSeePawn.AddDynamic(this, &ACS_Minion::OnPawnDetected);
 
-	//GetPawnSense()->OnHearNoise.AddDynamic(this, &AUS_Minion::OnHearNoise);
+	GetPawnSense()->OnHearNoise.AddDynamic(this, &ACS_Minion::OnHearNoise);
 
 }
 
@@ -103,10 +110,35 @@ void ACS_Minion::Chase(APawn* Pawn)
 	UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), Pawn);
 	DrawDebugSphere(GetWorld(), Pawn->GetActorLocation(), 25.f, 12, FColor::Red, true, 10.f, 0, 2.f);
 
-	/*if (const auto GameMode = Cast<ACS_GameMode>(GetWorld()->GetAuthGameMode()))
+	if (const auto GameMode = Cast<ACS_GameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		GameMode->AlertMinions(this, Pawn->GetActorLocation(), AlertRadius);
-	}*/
+	}
+}
+
+void ACS_Minion::OnHearNoise(APawn* PawnInstigator, const FVector& Location, float Volume)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Noise detected!"));
+	GoToLocation(Location);
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), PatrolLocation);
+}
+
+void ACS_Minion::GoToLocation(const FVector& Location)
+{
+	PatrolLocation = Location;
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), PatrolLocation);
+}
+
+void ACS_Minion::OnDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatedBy, AActor* DamageCauser)
+{
+	Health -= Damage;
+	if (Health > 0) return;
+	if (SpawnedPickup)
+	{
+		GetWorld()->SpawnActor<ACS_BasePickup>(SpawnedPickup, GetActorLocation(), GetActorRotation());
+	}
+	Destroy();
 }
 
 // Called every frame

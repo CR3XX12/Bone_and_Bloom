@@ -49,6 +49,12 @@ class C280CHOMPERSTUDIOS_API ACS_Character : public ACharacter
 	UPROPERTY()
 	AActor* InteractableActor;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stealth", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UPawnNoiseEmitterComponent> NoiseEmitter;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCS_WeaponProjectileComponent> Weapon;
+
 public:
 	// Sets default values for this character's properties
 	ACS_Character();
@@ -103,5 +109,8 @@ public:
 
 	// Getter for the character statistics based on the level
 	FORCEINLINE FCS_CharacterStats* GetCharacterStats() const { return CharacterStats; }
+
+	// Getter for the weapon component
+	FORCEINLINE UCS_WeaponProjectileComponent* GetWeapon() const { return Weapon; }
 
 };

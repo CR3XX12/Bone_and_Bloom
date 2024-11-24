@@ -7,6 +7,8 @@
 #include "CS_PlayerState.h" 
 #include "CS_Character.h" 
 #include "UObject/ConstructorHelpers.h"
+#include "CS_Minion.h" 
+#include "Kismet/GameplayStatics.h"
 
 
 ACS_GameMode::ACS_GameMode()
@@ -21,3 +23,21 @@ ACS_GameMode::ACS_GameMode()
 	}
 
 }
+
+void ACS_GameMode::AlertMinions(AActor* AlertInstigator, const FVector& Location, const float Radius)
+{
+	TArray<AActor*> Minions;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACS_Minion::StaticClass(), Minions);
+	for (const auto Minion : Minions)
+	{
+		if (AlertInstigator == Minion) continue;
+		if (const auto Distance = FVector::Distance(AlertInstigator->GetActorLocation(), Minion->GetActorLocation()); Distance < Radius)
+		{
+			if (const auto MinionCharacter = Cast<ACS_Minion>(Minion))
+			{
+				MinionCharacter->GoToLocation(Location);
+			}
+		}
+	}
+}
+

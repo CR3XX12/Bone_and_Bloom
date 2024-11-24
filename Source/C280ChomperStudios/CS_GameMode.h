@@ -16,7 +16,8 @@ class C280CHOMPERSTUDIOS_API ACS_GameMode : public AGameMode
 
 public:
 	ACS_GameMode();
-
+	UFUNCTION(BlueprintCallable, Category = "Minions")
+	void AlertMinions(class AActor* AlertInstigator, const FVector& Location, float Radius);
 
 	
 };

@@ -15,6 +15,7 @@
 #include "CS_Interactable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "CS_WeaponProjectileComponent.h"
 
 
 
@@ -33,6 +34,14 @@ ACS_Character::ACS_Character()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	// Create the noise emitter
+	NoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("NoiseEmitter"));
+	NoiseEmitter->NoiseLifetime = 0.01f;
+
+	Weapon = CreateDefaultSubobject<UCS_WeaponProjectileComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(RootComponent);
+	Weapon->SetRelativeLocation(FVector(120.f, 70.f, 0.f));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -111,6 +120,17 @@ void ACS_Character::Tick(float DeltaTime)
 	else
 	{
 		InteractableActor = nullptr;
+	}
+
+	// If the character is running, emit noise
+	if (GetCharacterMovement()->MaxWalkSpeed == GetCharacterStats()->SprintSpeed)
+	{
+		auto Noise = 1.f;
+		if (GetCharacterStats() && GetCharacterStats()->StealthMultiplier)
+		{
+			Noise = Noise / GetCharacterStats()->StealthMultiplier;
+		}
+		NoiseEmitter->MakeNoise(this, Noise, GetActorLocation());
 	}
 
 }

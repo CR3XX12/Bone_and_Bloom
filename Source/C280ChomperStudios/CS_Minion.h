@@ -28,6 +28,14 @@ public:
 	float ChaseSpeed = 350.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Minion AI")
 	float PatrolRadius = 50000.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Minion AI", meta = (AllowPrivateAccess =
+		"true"))
+	float AlertRadius = 6000.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	float Health = 5.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ACS_BasePickup> SpawnedPickup;
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,6 +48,11 @@ protected:
 	UFUNCTION()
 	void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
+	UFUNCTION()
+	void OnHearNoise(APawn* PawnInstigator, const FVector& Location, float Volume);
+	
+	UFUNCTION()
+	void OnDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 
 
 public:	
@@ -59,6 +72,7 @@ public:
 	FORCEINLINE UPawnSensingComponent* GetPawnSense() const { return PawnSense; }
 	FORCEINLINE USphereComponent* GetCollision() const { return Collision; }
 
-
+	UFUNCTION(BlueprintCallable, Category = "Minion AI")
+	void GoToLocation(const FVector& Location);
 
 };
