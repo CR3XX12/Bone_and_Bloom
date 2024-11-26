@@ -85,6 +85,12 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void SprintEnd_Server();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void SprintStart_Client();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void SprintEnd_Client();
+
 
 	/** The function called when the character interacts with the environment. */
 	void Interact(const FInputActionValue& Value);
@@ -92,6 +98,9 @@ protected:
 	/** The function called on the server when the character interacts with the environment. */
 	UFUNCTION(Server, Reliable)
 	void Interact_Server();
+
+
+
 
 public:	
 	// Called every frame

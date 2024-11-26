@@ -199,14 +199,26 @@ void ACS_Character::SprintEnd(const FInputActionValue& Value)
 // Executes the sprint start action from the server
 void ACS_Character::SprintStart_Server_Implementation()
 {
+	SprintStart_Client();
+}
+
+// Executes the sprint end action from the server
+void ACS_Character::SprintEnd_Server_Implementation()
+{
+	SprintEnd_Client();
+}
+
+// Client-side implementation for starting the sprint
+void ACS_Character::SprintStart_Client_Implementation()
+{
 	if (GetCharacterStats())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->SprintSpeed;
 	}
 }
 
-// Executes the sprint end action from the server
-void ACS_Character::SprintEnd_Server_Implementation()
+// Client-side implementation for ending the sprint
+void ACS_Character::SprintEnd_Client_Implementation()
 {
 	if (GetCharacterStats())
 	{
