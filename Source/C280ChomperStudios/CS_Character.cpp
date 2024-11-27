@@ -64,7 +64,14 @@ ACS_Character::ACS_Character()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
+	// Adjustments for walking on convex colliders like stairs
+	GetCharacterMovement()->SetWalkableFloorAngle(60.0f); // Allow steeper angles
+	GetCharacterMovement()->MaxStepHeight = 45.0f;       // Increase step height
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // Ensure proper collision
+
 }
+
+
 
 // Called when the game starts or when spawned
 void ACS_Character::BeginPlay()
