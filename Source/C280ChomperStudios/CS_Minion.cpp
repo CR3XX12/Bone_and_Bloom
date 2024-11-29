@@ -37,7 +37,7 @@ ACS_Minion::ACS_Minion()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -91.f));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-		SkeletalMeshAsset(TEXT("/Game/KayKit/Skeletons/skeleton_minion"));
+		SkeletalMeshAsset(TEXT("/Game/Blueprints/BPEnemies/BP_MinionSentinel"));
 	if (SkeletalMeshAsset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMeshAsset.Object);
@@ -133,11 +133,15 @@ void ACS_Minion::OnDamage(AActor* DamagedActor, float Damage, const UDamageType*
 	AController* InstigatedBy, AActor* DamageCauser)
 {
 	Health -= Damage;
-	if (Health > 0) return;
+	if (Health > 0) {
+		//play hurt animation
+		 return;
+	}
 	if (SpawnedPickup)
 	{
 		GetWorld()->SpawnActor<ACS_BasePickup>(SpawnedPickup, GetActorLocation(), GetActorRotation());
 	}
+	//play killed animation
 	Destroy();
 }
 
