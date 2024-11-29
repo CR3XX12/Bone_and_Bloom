@@ -61,7 +61,7 @@ void UCS_WeaponProjectileComponent::Throw_Server_Implementation()
 			ProjectileSpawnParams.Instigator = Character;
 
 			GetWorld()->SpawnActor<ACS_BaseWeaponProjectile>(ProjectileClass, ProjectileSpawnLocation, ProjectileSpawnRotation, ProjectileSpawnParams);
-		}, .4f, false);
+		}, .5f, false);
 	}
 }
 

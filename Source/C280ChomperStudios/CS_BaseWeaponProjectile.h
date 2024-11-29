@@ -9,40 +9,39 @@
 UCLASS()
 class C280CHOMPERSTUDIOS_API ACS_BaseWeaponProjectile : public AActor
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	/** The collision component used to detect the character overlapping the pickup. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class USphereComponent> SphereCollision;
+    /** The collision component used to detect the character overlapping the pickup. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<class USphereComponent> SphereCollision;
 
-	/** The static mesh used to represent the pickup. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> Mesh;
+    /** The static mesh used to represent the pickup. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UStaticMeshComponent> Mesh;
 
-	/** The projectile movement component used to move the weapon. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UProjectileMovementComponent> ProjectileMovement;
+    /** The projectile movement component used to move the weapon. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<class UProjectileMovementComponent> ProjectileMovement;
 
-	/** The static mesh used to represent the pickup. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	float Damage = 1.f;
+    /** Damage dealt by the projectile. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+    float Damage = 1.f;
 
-	
-public:	
-	// Sets default values for this actor's properties
-	ACS_BaseWeaponProjectile();
+public:    
+    // Sets default values for this actor's properties
+    ACS_BaseWeaponProjectile();
 
 protected:
-	// Add OnHit handler
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-		const FHitResult& Hit);
+    /** Handle the projectile's collision events. */
+    UFUNCTION()
+    void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-public:	
-	
-	// Getter functions
-	FORCEINLINE USphereComponent* GetSphereCollision() const { return SphereCollision; }
-	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
-	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+    /** Called when the projectile is initialized (overrides AActor::PostInitializeComponents). */
+    virtual void PostInitializeComponents() override;
 
+public:    
+    // Getter functions
+    FORCEINLINE USphereComponent* GetSphereCollision() const { return SphereCollision; }
+    FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
+    FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 };
