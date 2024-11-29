@@ -10,10 +10,7 @@
 // Sets default values for this component's properties
 UCS_WeaponProjectileComponent::UCS_WeaponProjectileComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
 	ProjectileClass = ACS_BaseWeaponProjectile::StaticClass();
-
-	
 }
 
 
@@ -24,8 +21,8 @@ void UCS_WeaponProjectileComponent::BeginPlay()
 
 	// Add the base mapping context to the player controller only if we are using a PlayerController
 	const ACS_Character* Character = Cast<ACS_Character>(GetOwner());
-	if (!Character) return;
-
+	if(!Character) return;
+	
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -38,33 +35,47 @@ void UCS_WeaponProjectileComponent::BeginPlay()
 			EnhancedInputComponent->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &UCS_WeaponProjectileComponent::Throw);
 		}
 	}
-	
 }
 
 void UCS_WeaponProjectileComponent::Throw()
 {
 	Throw_Server();
 }
-void UCS_WeaponProjectileComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
-}
 void UCS_WeaponProjectileComponent::Throw_Server_Implementation()
 {
 	// Spawn the projectile, setting its owner and instigator as the spawning character
 	if (ProjectileClass)
 	{
-		const auto Character = Cast<ACS_Character>(GetOwner());
-		const auto ProjectileSpawnLocation = GetComponentLocation();
-		const auto ProjectileSpawnRotation = GetComponentRotation();
-		auto ProjectileSpawnParams = FActorSpawnParameters();
-		ProjectileSpawnParams.Owner = GetOwner();
-		ProjectileSpawnParams.Instigator = Character;
+		// Call the client side method to play the animation
+		Throw_Client();
+		// Delay the spawn of the projectile to match the animation
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+		{
+			const auto Character = Cast<ACS_Character>(GetOwner());
+			const auto ProjectileSpawnLocation = GetComponentLocation();
+			const auto ProjectileSpawnRotation = GetComponentRotation();
+			auto ProjectileSpawnParams = FActorSpawnParameters();
+			ProjectileSpawnParams.Owner = GetOwner();
+			ProjectileSpawnParams.Instigator = Character;
 
-		GetWorld()->SpawnActor<ACS_BaseWeaponProjectile>(ProjectileClass, ProjectileSpawnLocation, ProjectileSpawnRotation, ProjectileSpawnParams);
+			GetWorld()->SpawnActor<ACS_BaseWeaponProjectile>(ProjectileClass, ProjectileSpawnLocation, ProjectileSpawnRotation, ProjectileSpawnParams);
+		}, .4f, false);
 	}
+}
+
+void  UCS_WeaponProjectileComponent::Throw_Client_Implementation()
+{
+	// Play the animation on the client side
+	const auto Character = Cast<ACS_Character>(GetOwner());
+	if (ThrowAnimation != nullptr)
+	{
+		if (const auto AnimInstance = Character->GetMesh()->GetAnimInstance(); AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(ThrowAnimation, 1.f);
+		}
+	}	
 }
 
 void UCS_WeaponProjectileComponent::SetProjectileClass(TSubclassOf<ACS_BaseWeaponProjectile> NewProjectileClass)

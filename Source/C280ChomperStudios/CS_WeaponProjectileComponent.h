@@ -19,12 +19,15 @@ class C280CHOMPERSTUDIOS_API UCS_WeaponProjectileComponent : public USceneCompon
 	// Declare the input mapping context for the basic actions (movement, interaction, etc.)
 
 	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputMappingContext> WeaponMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
+	class UInputMappingContext* WeaponMappingContext;
 
 	/** Fire Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> ThrowAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
+	class UInputAction* ThrowAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(AllowPrivateAccess = "true"))
+	UAnimMontage* ThrowAnimation;
 
 public:	
 	// Sets default values for this component's properties
@@ -45,10 +48,8 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void Throw_Server();
 
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	// Call the throw projectile logic from the client
+	UFUNCTION(NetMulticast, Unreliable)
+	void Throw_Client();
 		
 };
