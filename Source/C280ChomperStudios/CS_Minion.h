@@ -17,6 +17,8 @@ class C280CHOMPERSTUDIOS_API ACS_Minion : public ACharacter
 	TObjectPtr<class USphereComponent> Collision;
 	UPROPERTY()
 	FVector PatrolLocation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(AllowPrivateAccess = "true"))
+	UAnimMontage* HurtAnimation;
 
 public:
 	// Sets default values for this character's properties
