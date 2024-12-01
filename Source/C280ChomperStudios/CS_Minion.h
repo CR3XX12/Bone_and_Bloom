@@ -19,6 +19,8 @@ class C280CHOMPERSTUDIOS_API ACS_Minion : public ACharacter
 	FVector PatrolLocation;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(AllowPrivateAccess = "true"))
 	UAnimMontage* HurtAnimation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(AllowPrivateAccess = "true"))
+	UAnimMontage* DeathAnimation;
 
 public:
 	// Sets default values for this character's properties
