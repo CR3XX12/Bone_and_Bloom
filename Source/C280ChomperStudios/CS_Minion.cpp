@@ -132,9 +132,18 @@ void ACS_Minion::GoToLocation(const FVector& Location)
 void ACS_Minion::OnDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatedBy, AActor* DamageCauser)
 {
+	const auto Character = Cast<ACS_Minion>(DamagedActor);
+	
 	Health -= Damage;
 	if (Health > 0) {
 		//play hurt animation
+		if (HurtAnimation != nullptr)
+		{
+			if (const auto AnimInstance = Character->GetMesh()->GetAnimInstance(); AnimInstance != nullptr)
+			{
+				AnimInstance->Montage_Play(HurtAnimation, 1.f);
+			}
+		}
 		 return;
 	}
 	if (SpawnedPickup)
