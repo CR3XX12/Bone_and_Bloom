@@ -21,7 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	ACS_MinionSpawner();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawn System")
+	UPROPERTY(EditAnywhere, Category = "Spawn System")
 	TArray<TSubclassOf<class ACS_Minion>> SpawnableMinions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawn System")
