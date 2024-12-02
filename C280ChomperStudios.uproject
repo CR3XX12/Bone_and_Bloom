@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"EngineAssociation": "5.4",
 	"Category": "",
-	"Description": "",
+	"Description": "Project using MSVC Toolchain 14.38 for compatibility.",
 	"Modules": [
 		{
 			"Name": "C280ChomperStudios",
