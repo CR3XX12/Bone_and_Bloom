@@ -51,7 +51,7 @@ ACS_Character::ACS_Character()
 
 	// Set the skeletal mesh for the character
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -91.f));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("/Game/Adventures/Characters/fbx/Druid"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("/Game/Adventures/Characters/fbx/druid/Druid"));
 	if (SkeletalMeshAsset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMeshAsset.Object);
