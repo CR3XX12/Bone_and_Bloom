@@ -45,7 +45,7 @@ Built with multiplayer in mind, the game follows core networking principles:
 
 ![image](https://github.com/user-attachments/assets/5d302658-1fdd-4d7f-bc3e-f2a773981d53)
 
-## 🛠️ Tech Stack
+## 🛠️ Built With
 
 - **Unreal Engine 5**
 - **C++ and Blueprints Hybrid Project**
